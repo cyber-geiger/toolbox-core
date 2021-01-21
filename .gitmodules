@@ -1,0 +1,6 @@
+[submodule "toolbox-communicationApi"]
+	path = toolbox-communicationApi
+	url = https://github.com/cyber-geiger/toolbox-communicationApi.git
+[submodule "toolbox-storage"]
+	path = toolbox-storage
+	url = https://github.com/cyber-geiger/toolbox-storage.git

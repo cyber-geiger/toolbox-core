@@ -1,0 +1,11 @@
+defaultTasks 'run'
+
+tasks.register('run') {
+    dependsOn gradle.includedBuild('toolbox-core').task(':app:run')
+}
+
+task checkAll {
+    dependsOn gradle.includedBuild('toolbox-core').task(':app:check')
+    dependsOn gradle.includedBuild('toolbox-communicationAPI').task(':app:check')
+    dependsOn gradle.includedBuild('toolbox-storage').task(':app:check')
+}
