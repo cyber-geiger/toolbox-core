@@ -10,5 +10,3 @@
 rootProject.name = 'toolbox'
 
 includeBuild 'toolbox-core'
-includeBuild 'toolbox-communicationAPI'
-includeBuild 'toolbox-storage'
