@@ -11,7 +11,7 @@ pipeline {
 	stages {
         stage('Clone sources') {
             steps {
-                git url: 'git@github.com:cyber-geiger/toolbox-cor.git',credentialsId: 'GEIGER_deployment', branch: env.BRANCH_NAME
+                git url: 'git@github.com:cyber-geiger/toolbox-core.git',credentialsId: 'GEIGER_deployment', branch: env.BRANCH_NAME
             }
         }
 
