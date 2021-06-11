@@ -1,0 +1,40 @@
+plugins {
+    id 'application'
+}
+
+group 'ch.fhnw.geiger'
+version '1.0'
+
+application {
+    mainClass = 'ch.fhnw.geiger.core.Main'
+}
+
+dependencies {
+    implementation group: 'eu.cyber-geiger', name:'toolbox-communicationApi', version: '0.0.2-SNAPSHOT', changing: true
+}
+
+repositories {
+    mavenCentral()
+    jcenter()
+    maven {
+        url = uri('http://maven.totalcross.com/artifactory/repo1')
+    }
+
+    maven {
+        url = uri('http://repo.maven.apache.org/maven2')
+        mavenContent {
+            releasesOnly()
+        }
+    }
+    maven {
+        url = uri('https://oss.sonatype.org/content/repositories/snapshots/')
+        mavenContent {
+            snapshotsOnly()
+        }
+    }
+}
+
+configurations.all {
+    resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
+    resolutionStrategy.cacheDynamicVersionsFor 0, 'seconds'
+}
