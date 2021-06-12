@@ -1,4 +1,22 @@
-defaultTasks 'run'
+plugins {
+    id 'java'
+}
+
+group 'eu.cyber-geiger'
+version '0.1-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.6.0'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
+}
+
+test {
+    useJUnitPlatform()
+}
 
 tasks.register('run') {
     dependsOn gradle.includedBuild('toolbox-core').task(':app:run')
