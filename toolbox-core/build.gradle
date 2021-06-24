@@ -6,7 +6,7 @@ group 'ch.fhnw.geiger'
 version '1.0'
 
 application {
-    mainClass = 'ch.fhnw.geiger.core.Main'
+    mainClass = 'eu.cybergeiger.core.CoreRunner'
 }
 
 dependencies {

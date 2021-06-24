@@ -84,3 +84,13 @@ local.properties
 /build/
 
 /localstorage/testdb.trace.db
+/*.tcz
+/toolbox-core/toolbox-core-totalcross/nullandroid/toolbox-core-totalcross.apk
+/toolbox-core/toolbox-core-totalcross/target/all.pkg
+/toolbox-core/toolbox-core-totalcross/target/antrun/build-main.xml
+/toolbox-core/toolbox-core-totalcross/target/maven-archiver/pom.properties
+/toolbox-core/toolbox-core-totalcross/target/maven-status/maven-compiler-plugin/compile/default-compile/inputFiles.lst
+/toolbox-core/toolbox-core-totalcross/target/maven-status/maven-compiler-plugin/testCompile/default-testCompile/inputFiles.lst
+/toolbox-core/toolbox-core-totalcross/target/retrolambda/retrolambda.jar
+/toolbox-core/toolbox-core-totalcross/target/toolbox-core-totalcross.jar
+/toolbox-core/toolbox-core-totalcross/target/totalcross-libs/toolbox-storageLib.tcz

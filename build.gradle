@@ -23,11 +23,24 @@ tasks.register('run') {
     dependsOn gradle.includedBuild('toolbox-core').task(':app:run')
 }
 
-task downloadFromURLs(){
+task downloadFromURLs() {
     download {
-        src ([
+        src([
                 'https://project.cyber-geiger.eu/jenkins/job/toolbox-communicationApi/job/development/lastSuccessfulBuild/artifact/communicationAPI-totalcross/target/install/linux/communicationAPI-totalcross.tcz'
         ])
-        dest rootProject.projectDir //"${buildDir}" //new File(".").absolutePath //"$System.env.HOME"//'/home/mlacayo/workspace/toobox-core'
+        dest rootProject.projectDir
     }
+    download {
+        src([
+                'https://project.cyber-geiger.eu/jenkins/job/localstorage/job/development/lastSuccessfulBuild/artifact/localstorage-totalcross/target/install/win32/localstorage-totalcross.tcz'
+        ])
+        dest rootProject.projectDir
+    }
+}
+
+task renameTcz (type:Copy) {
+    from(rootProject.projectDir)
+    include '.*[^L]{1}[^i]{1}[^b]{1}\\.tcz'
+    into(rootProject.projectDir)
+    rename('(.+).tcz', '$1Lib.tcz')
 }
