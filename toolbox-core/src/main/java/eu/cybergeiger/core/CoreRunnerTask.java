@@ -6,10 +6,8 @@ public abstract class CoreRunnerTask extends Thread {
 
   /**
    * <p>Called to start up plugin.</p>
-   * @param args commandline parameters passed to main application
    */
-  public void startup(String args) {
-    this.args = args;
+  public void startup() {
     this.start();
   }
 
