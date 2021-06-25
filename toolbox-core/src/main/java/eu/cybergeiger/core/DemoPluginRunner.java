@@ -5,8 +5,8 @@ import eu.cybergeiger.demo.DemoPluginFeatures;
 
 public class DemoPluginRunner extends CoreRunnerTask {
 
-  private DemoPlugin plugin = new DemoPlugin(DemoPluginFeatures.FEATURE_ALL.getId());
-  
+  private final DemoPlugin plugin = new DemoPlugin(DemoPluginFeatures.FEATURE_ALL.getId());
+
   @Override
   public void shutdown() {
     plugin.stop();
