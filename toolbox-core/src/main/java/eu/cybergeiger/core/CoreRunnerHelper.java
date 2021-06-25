@@ -1,24 +1,29 @@
 package eu.cybergeiger.core;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Vector;
+import java.util.*;
 
 public class CoreRunnerHelper {
 
   private static List<CoreRunnerTask> componentList = new Vector<>();
+  private static Map<CoreRunnerTask, String> componentMap = new HashMap<>();
 
   public static void start(String[] args) {
     // add your task here to start (beware of the sequence)
     // FIXME add splashscreen here
-    componentList.add(new DemoPluginRunner());
+    componentMap.put(new DemoPluginRunner(), "");
+    //componentList.add(new DemoPluginRunner());
     // FIXME add components here
     // FIXME add UI here as last entry
 
     // no changes beyond this point unless you know what you are doing
+    /*
     for(CoreRunnerTask t:componentList) {
-      t.start();
+      t.startup();
+    }
+    */
+    // call each CoreRunnerTask with their respective arguments
+    for(Map.Entry<CoreRunnerTask, String> e : componentMap.entrySet()) {
+      e.getKey().startup(e.getValue());
     }
   }
 
