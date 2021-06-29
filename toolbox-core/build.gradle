@@ -11,6 +11,8 @@ application {
 
 dependencies {
     implementation group: 'eu.cyber-geiger', name:'toolbox-communicationApi', version: '0.0.2-SNAPSHOT', changing: true
+    implementation group: 'eu.cyber-geiger', name:'toolbox-indicator', version: '0.0.1-SNAPSHOT', changing: true
+
 }
 
 repositories {
