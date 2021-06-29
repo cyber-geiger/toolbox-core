@@ -11,6 +11,9 @@ public class CoreRunnerHelper {
 
   public static void start(String[] args) {
     // add your task here to start (beware of the sequence)
+    
+    //GEIGERIndicatorRunner
+    componentList.add(new GEIGERIndicatorRunner(""));
     // FIXME add splashscreen here
     componentList.add(new DemoPluginRunner(""));
     // FIXME add components here
