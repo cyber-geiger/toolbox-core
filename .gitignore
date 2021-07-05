@@ -94,3 +94,6 @@ local.properties
 /toolbox-core/toolbox-core-totalcross/target/retrolambda/retrolambda.jar
 /toolbox-core/toolbox-core-totalcross/target/toolbox-core-totalcross.jar
 /toolbox-core/toolbox-core-totalcross/target/totalcross-libs/toolbox-storageLib.tcz
+/toolbox-core-totalcross/toolbox-core-totalcross.iml
+/chime.mp3
+/toolbox-core/chime.mp3

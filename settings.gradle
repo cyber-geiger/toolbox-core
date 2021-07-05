@@ -9,4 +9,4 @@
 
 rootProject.name = 'toolbox'
 
-includeBuild 'toolbox-core'
+include 'toolbox-core'

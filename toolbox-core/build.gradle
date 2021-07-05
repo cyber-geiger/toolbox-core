@@ -1,21 +1,29 @@
 plugins {
+    id 'java'
+    id 'java-library'
+    id 'de.undercouch.download' version '3.4.3'
+    id 'checkstyle'
+    id 'com.github.johnrengelman.shadow' version '6.1.0'
+    id "com.github.dkorotych.gradle-maven-exec" version "2.2.1"
+    id 'maven-publish'
+    id 'signing'
     id 'application'
 }
 
-group 'ch.fhnw.geiger'
-version '1.0'
+group 'eu.cyber-geiger'
+version '0.1-SNAPSHOT'
 
-application {
-    mainClass = 'eu.cybergeiger.core.CoreRunner'
+sourceCompatibility = '1.8'
+
+compileJava {
+    options.release = 8
 }
 
-dependencies {
-    implementation group: 'eu.cyber-geiger', name:'toolbox-communicationApi', version: '0.0.2-SNAPSHOT', changing: true
-}
+
+project.setProperty("mainClassName", "eu.cybergeiger.core.CoreRunner")
 
 repositories {
     mavenCentral()
-    jcenter()
     maven {
         url = uri('http://maven.totalcross.com/artifactory/repo1')
     }
@@ -26,6 +34,7 @@ repositories {
             releasesOnly()
         }
     }
+
     maven {
         url = uri('https://oss.sonatype.org/content/repositories/snapshots/')
         mavenContent {
@@ -34,7 +43,234 @@ repositories {
     }
 }
 
+
+application {
+    // mainClass =
+    getMainClass().set('eu.cybergeiger.core.CoreRunner')
+    mainClassName = "eu.cybergeiger.core.CoreRunner"
+}
+
+
+configurations {
+    checkstyleConfig
+}
+
+dependencies {
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.6.0'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
+    implementation('com.totalcross:totalcross-sdk:7.1.0')
+    implementation('eu.cyber-geiger:toolbox-storage:0.3.3b-SNAPSHOT') { changing = true }
+    implementation('eu.cyber-geiger:toolbox-communicationApi:0.0.2-SNAPSHOT') { changing = true }
+    implementation('eu.cyber-geiger:toolbox-ui:0.0.1-SNAPSHOT') { changing = true }
+    implementation('eu.cyber-geiger:toolbox-indicator:0.0.1-SNAPSHOT') { changing = true }
+}
+
+test {
+    useJUnitPlatform()
+}
+
+/*tasks.register('run') {
+    dependsOn gradle.includedBuild('toolbox-core').task(':app:run')
+}*/
+
+/*
+task downloadFromURLs() {
+    download {
+        src([
+                'https://project.cyber-geiger.eu/jenkins/job/toolbox-communicationApi/job/development/lastSuccessfulBuild/artifact/communicationAPI-totalcross/target/install/linux/communicationAPI-totalcross.tcz'
+        ])
+        dest rootProject.projectDir
+    }
+    download {
+        src([
+                'https://project.cyber-geiger.eu/jenkins/job/localstorage/job/development/lastSuccessfulBuild/artifact/localstorage-totalcross/target/install/win32/localstorage-totalcross.tcz'
+        ])
+        dest rootProject.projectDir
+    }
+}
+
+task renameTcz (type:Copy) {
+    from(rootProject.projectDir)
+    include '.*[^L]{1}[^i]{1}[^b]{1}\\.tcz'
+    into(rootProject.projectDir)
+    rename('(.+).tcz', '$1Lib.tcz')
+}
+*/
+
+// no caching for modules
 configurations.all {
     resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
-    resolutionStrategy.cacheDynamicVersionsFor 0, 'seconds'
+    resolutionStrategy {
+        force 'xml-apis:xml-apis:1.0.b2'
+    }
 }
+
+tasks.named('jar') {
+    manifest {
+        attributes('Implementation-Title': project.name,
+                'Implementation-Version': project.version,
+        )
+    }
+}
+
+tasks.withType(JavaCompile) {
+    options.encoding = 'UTF-8'
+}
+
+tasks.withType(Checkstyle) {
+    reports {
+        xml.enabled false
+        html.enabled true
+    }
+}
+
+jar.dependsOn shadowJar
+jar.dependsOn test
+
+check.dependsOn checkstyleMain
+
+/* integrate junit */
+test {
+    systemProperty 'java.util.logging.manager', 'org.apache.logging.log4j.jul.LogManager'
+    useJUnitPlatform {
+        // includeTestsMatching "ch.fhnw.geiger.localstorage.Test*"
+    }
+    maxHeapSize = '1G'
+}
+
+checkstyle {
+    toolVersion '8.38'
+    config = resources.text.fromArchiveEntry(configurations.checkstyleConfig, 'google_checks.xml')
+    ignoreFailures = false
+    maxWarnings = 0
+}
+
+compileJava {
+    options.compilerArgs += ["-Aproject=${project.group}/${project.name}"]
+}
+
+
+java {
+    withSourcesJar()
+    withJavadocJar()
+}
+
+def gitBranch() {
+    def branch = ""
+    def proc = "git rev-parse --abbrev-ref HEAD".execute()
+    proc.in.eachLine { line -> branch = line }
+    proc.err.eachLine { line -> println line }
+    proc.waitFor()
+    branch
+}
+
+artifacts {
+    archives javadocJar, sourcesJar
+}
+
+publishing {
+    repositories {
+        // The repository to publish to, Sonatype/MavenCentral
+        maven {
+            // This is an arbitrary name, you may also use "mavencentral" or
+            // any other name that's descriptive for you
+            name = "sonatype"
+
+            def releasesRepoUrl = "https://oss.sonatype.org/service/local/staging/deploy/maven2/"
+            def snapshotsRepoUrl = "https://oss.sonatype.org/content/repositories/snapshots/"
+            url = (gitBranch() == "main") ? releasesRepoUrl : snapshotsRepoUrl
+
+            credentials {
+                username findProperty('ossrhUsername')
+                password findProperty('ossrhPassword')
+            }
+        }
+    }
+    publications {
+        mavenJava(MavenPublication) {
+            artifactId = 'toolbox-core'
+            from components.java
+
+            version = gitBranch() == "main" ? version : version + '-SNAPSHOT'
+
+            versionMapping {
+                usage('java-api') {
+                    fromResolutionOf('runtimeClasspath')
+                }
+                usage('java-runtime') {
+                    fromResolutionResult()
+                }
+            }
+            pom {
+                name = 'toolbox-core'
+                description = 'The GEIGER toolbox core project'
+                url = 'https://github.com/cyber-geiger/toolbox-core'
+                licenses {
+                    license {
+                        name = 'The Apache License, Version 2.0'
+                        url = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                    }
+                }
+                developers {
+                    developer {
+                        id = 'mgwerder'
+                        name = 'Martin Gwerder'
+                        email = 'martin.gwerder@fhnw.ch'
+                    }
+                    developer {
+                        id = 'sleemann'
+                        name = 'Sacha Leemann'
+                        email = 'sacha.leemann@fhnw.ch'
+                    }
+                }
+                scm {
+                    connection = 'scm:git:git://github.com/cyber-geiger/toolbox-core.git'
+                    developerConnection = 'scm:git:ssh://github.com/cyber-geiger/toolbox-core.git'
+                    url = 'http://github.com/cyber-geiger/toolbox-core'
+                }
+            }
+
+        }
+
+    }
+
+}
+
+signing {
+    sign publishing.publications.mavenJava
+}
+
+task packageTotalcross {
+    doLast {
+        mavenexec {
+            workingDir rootProject.getProjectDir().getAbsolutePath() + "/toolbox-core-totalcross"
+            goals '-DskipTests', 'package'
+        }
+    }
+}
+
+jar.dependsOn packageTotalcross
+
+task testTotalcross {
+    doLast {
+        mavenexec {
+            workingDir rootProject.getProjectDir().getAbsolutePath() + "/toolbox-core-totalcross"
+            goals 'test'
+        }
+    }
+}
+
+check.dependsOn testTotalcross
+
+task mavenClean {
+    doLast {
+        mavenexec {
+            workingDir rootProject.getProjectDir().getAbsolutePath() + "/toolbox-core-totalcross"
+            goals 'clean'
+        }
+    }
+}
+
+clean.dependsOn mavenClean
+
+
