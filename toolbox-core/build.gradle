@@ -127,8 +127,6 @@ tasks.withType(Checkstyle) {
 jar.dependsOn shadowJar
 jar.dependsOn test
 
-check.dependsOn checkstyleMain
-
 /* integrate junit */
 test {
     systemProperty 'java.util.logging.manager', 'org.apache.logging.log4j.jul.LogManager'
